@@ -34,3 +34,50 @@ def create_student(
         db=db,
         student=student
     )
+
+
+#GET all
+
+@app.get("/students", response_model=list[schemas.StudentResponse])
+def get_student(db:Session=Depends(get_db)):
+
+    return crud.get_students(db)
+
+#Get Single
+@app.get("/student/{student_id}",response_model=schemas.StudentResponse)
+def get_student(
+    student_id:int,
+    db: Session = Depends(get_db)
+):
+    return crud.get_student(db,student_id)
+
+
+#UPDATE
+@app.put(
+    "/students/{student_id}",
+    response_model=schemas.StudentResponse
+)
+def update_student(
+    student_id:int,
+    updated_student: schemas.StudentCreate,
+    db: Session= Depends(get_db)
+):
+    return crud.update_student(
+        db,
+        student_id,
+        updated_student
+    )
+
+
+#DELETE
+@app.delete(
+    "/students/{student_id}",
+    response_model=schemas.StudentResponse
+    
+)
+
+def delete_student(
+    student_id: int,
+    db:Session=Depends(get_db)
+):
+    return crud.delete_student(db,student_id)
