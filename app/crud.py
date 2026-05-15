@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from security import hash_password
 import models
 import schemas
 
@@ -26,6 +27,13 @@ def get_student(db:Session,student_id:int):
     return db.query(models.Student).filter(
         models.Student.id==student_id
     ).first()
+
+def get_student_by_name(db:Session,name:str):
+    return db.query(models.Student).filter(
+        models.Student.name==name
+    ).first()
+
+#Update
 
 def update_student(db:Session, student_id:int, updated_student: schemas.StudentCreate):
     student = db.query(models.Student).filter(
@@ -57,3 +65,22 @@ def delete_student(db:Session, student_id:int):
     db.commit()
 
     return student 
+
+
+def create_user(
+        db: Session,
+        user: schemas.UserCreate
+):
+    hashed_pw = hash_password(user.password)
+
+    db_user = models.User(
+        username = user.username,
+        email = user.email,
+        hashed_password = hashed_pw
+    )
+
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+
+    return db_user

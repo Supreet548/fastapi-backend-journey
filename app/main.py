@@ -43,6 +43,16 @@ def get_student(db:Session=Depends(get_db)):
 
     return crud.get_students(db)
 
+#search
+
+@app.get("/students/search/")
+def search_student(
+    name : str,
+    db: Session= Depends(get_db)
+):
+    return crud.get_student_by_name(db,name)
+
+
 #Get Single
 @app.get("/student/{student_id}",response_model=schemas.StudentResponse)
 def get_student(
@@ -81,3 +91,12 @@ def delete_student(
     db:Session=Depends(get_db)
 ):
     return crud.delete_student(db,student_id)
+
+
+
+@app.post("/register", response_model=schemas.UserResponse)
+def register_user(
+    user:schemas.UserCreate,
+    db:Session=Depends(get_db)
+):
+    return crud.create_user(db,user)
