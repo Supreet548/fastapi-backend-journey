@@ -100,3 +100,29 @@ def register_user(
     db:Session=Depends(get_db)
 ):
     return crud.create_user(db,user)
+
+
+
+@app.post(
+    "/notes",
+    response_model=schemas.NoteResponse
+
+)
+def create_note(
+    note:schemas.NoteCreate,
+    db: Session= Depends(get_db)
+
+):
+    return crud.create_note(db,note)
+
+
+@app.get(
+    "/users/{user_id}/notes",
+    response_model=list[schemas.NoteResponse]
+)
+
+def get_user_notes(
+    user_id:int,
+    db: Session= Depends(get_db)
+):
+    return crud.get_user_notes(db,user_id)
