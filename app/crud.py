@@ -108,5 +108,13 @@ def get_user_notes(
     return db.query(models.Note).filter(
         models.Note.user_id==user_id
     ).all()
-
+ 
     
+def get_user_by_email(
+        db:Session,
+        email:str
+):
+    
+    return db.query(models.User).filter(
+        models.User.email == email
+    ).first()

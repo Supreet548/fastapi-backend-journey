@@ -7,6 +7,8 @@ import crud
 
 from database import engine, SessionLocal
 
+from security import verify_password, create_access_token
+
 app = FastAPI()
 
 #create  tables
@@ -126,3 +128,35 @@ def get_user_notes(
     db: Session= Depends(get_db)
 ):
     return crud.get_user_notes(db,user_id)
+
+
+
+@app.post("/login")
+def login(
+    user:schemas.LoginRequest,
+    db:Session=Depends(get_db)
+):
+    db_user = crud.get_user_by_email(
+        db,
+        user.email
+    )
+
+    if not db_user:
+        return {"error":"Invalid email"}
+    
+    if not verify_password(
+        user.password,
+        db_user.hashed_password
+    ):
+        return {"error":"Invalid password"}
+    
+
+    access_token = create_access_token(
+        data = {"sub":db_user.email}
+    )
+
+
+    return {
+        "access_token":access_token,
+        "token_type":"bearer"
+    }
