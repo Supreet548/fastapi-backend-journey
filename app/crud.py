@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from security import hash_password
 import models
 import schemas
+from fastapi import HTTPException
+from security import oauth2_scheme, verify_token
 
 #Create Student
 def create_student(db:Session, student:schemas.StudentCreate):
@@ -118,3 +120,45 @@ def get_user_by_email(
     return db.query(models.User).filter(
         models.User.email == email
     ).first()
+
+
+def create_note(
+    db: Session,
+    note: schemas.NoteCreate,
+    user_id: int
+):
+
+    db_note = models.Note(
+        title=note.title,
+        content=note.content,
+        user_id=user_id
+    )
+
+    db.add(db_note)
+
+    db.commit()
+
+    db.refresh(db_note)
+
+    return db_note
+
+
+def create_note(
+    db: Session,
+    note: schemas.NoteCreate,
+    user_id: int
+):
+
+    db_note = models.Note(
+        title=note.title,
+        content=note.content,
+        user_id=user_id
+    )
+
+    db.add(db_note)
+
+    db.commit()
+
+    db.refresh(db_note)
+
+    return db_note

@@ -9,6 +9,9 @@ from database import engine, SessionLocal
 
 from security import verify_password, create_access_token
 
+from fastapi import HTTPException
+from security import oauth2_scheme, verify_token
+
 app = FastAPI()
 
 #create  tables
@@ -160,3 +163,54 @@ def login(
         "access_token":access_token,
         "token_type":"bearer"
     }
+
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+
+    email = verify_token(token)
+
+    if email is None:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token"
+        )
+
+    user = crud.get_user_by_email(
+        db,
+        email
+    )
+
+    if user is None:
+        raise HTTPException(
+            status_code=401,
+            detail="User not found"
+        )
+
+    return user
+
+
+@app.get("/me")
+def read_current_user(
+    token: str,
+    db: Session = Depends(get_db)
+):
+
+    email = verify_token(token)
+
+    return {"email": email}
+
+@app.post("/notes")
+def create_note(
+    note: schemas.NoteCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+
+    return crud.create_note(
+        db,
+        note,
+        current_user.id
+    )

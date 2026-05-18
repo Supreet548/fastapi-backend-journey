@@ -48,3 +48,10 @@ class NoteResponse(BaseModel):
 class LoginRequest(BaseModel):
     email:str
     password:str
+
+
+
+class NoteCreate(BaseModel):
+
+    title: str
+    content: str
