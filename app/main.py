@@ -12,7 +12,14 @@ from security import verify_password, create_access_token
 from fastapi import HTTPException
 from security import oauth2_scheme, verify_token
 
+from routers import students
+from routers import auth
+
 app = FastAPI()
+
+app.include_router(students.router)
+
+app.include_router(auth.router)
 
 #create  tables
 models.Base.metadata.create_all(bind=engine)
